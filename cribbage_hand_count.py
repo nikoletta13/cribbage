@@ -20,7 +20,7 @@ class Card:
 
         faces = ['J','Q','K']
         face_faces = {'J':11,'Q':12,'K':13}
-    
+
         if self.face in faces:
             self.value = 10
         else:
@@ -46,7 +46,7 @@ class Hand:
     def __init__(self,handset):
         self.cards = set()
         self.points = 0
-        self.handset = handset
+        self.handset = list(handset)
         self.handvalues = [c.value for c in self.handset]
         self.handfaces = [c.face_value for c in self.handset]
         self.handsuits = [c.suit for c in self.handset]
@@ -54,23 +54,29 @@ class Hand:
 
 
     def evaluate_strict_suits(self):
+        """
+        Get suits of the hand without the top card. 
+        """
         return self.handsuits[:-1]
 
     def evaluate_points(self):
+        """
+        Collect all the points in the hand. 
+        """
         # Fifteen
         for i in range(2,6):
             combs_length_i = combinations(self.handvalues,i)
             for comb in combs_length_i:
                 if sum(list(comb)) == 15:
                     self.points +=2
-        
+
         # Pairs
-        for f in self.hfset:
-            if self.handfaces.count(f)==2:
+        for f_c in self.hfset:
+            if self.handfaces.count(f_c)==2:
                 self.points+=2
-            elif self.handfaces.count(f)==3:
+            elif self.handfaces.count(f_c)==3:
                 self.points+=6
-            elif self.handfaces.count(f)==4:    
+            elif self.handfaces.count(f_c)==4:
                 self.points+=12
 
         # Sequence
@@ -96,5 +102,28 @@ class Hand:
         return self.points
 
 
+SUITS = ['H','C','S','D']
 
 
+DECK = [Card(i,s) for i in range(1,11) for s in SUITS]
+DECK += [Card(i,s) for i in ['J','Q','K'] for s in SUITS]
+
+H4 = combinations(DECK,4)
+
+def hand_generator():
+    """
+    Use generator to make this faster.
+    Can be used to extract list if so desired.
+    """
+    for h_h in H4:
+        top_cards = [t for t in DECK if t not in h_h]
+        for t_c in top_cards:
+            yield h_h+(t_c,)
+
+# hand_points = []
+# for hand in hand_generator():
+#     hand_points.append(hand.evaluate_points())
+
+hand_points = [Hand(h).evaluate_points() for h in hand_generator()]
+
+vals_dist = [hand_points.count(j) for j in range(0,30)]
