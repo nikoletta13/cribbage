@@ -1,18 +1,13 @@
 """
-Produce counts. 
+Count points in a hand for cribbage. 
 """
 from itertools import combinations
 import numpy as np
 
 
-
-#-----------------------------------------------
-# create a dictionary of the deck, and assign to each card the value it has
-#-----------------------------------------------
-
 class Card:
     """
-    define card from a face and a suit
+    define card from a face and a suit. Input face a number for number cards and JQK for others.
     Face_value: the number on the card for number cards, 11 12 13 for J Q K
     Value: number on the card for number cards, 10 for J Q K
     Suit: the suit of the card
@@ -54,7 +49,6 @@ class Hand:
         self.handset = handset
         self.handvalues = [c.value for c in self.handset]
         self.handfaces = [c.face_value for c in self.handset]
-        # self.handfacevalues = [c.face_value for c in self.handset]
         self.handsuits = [c.suit for c in self.handset]
         self.hfset = set(handset)
 
@@ -100,8 +94,6 @@ class Hand:
                 self.points+=1
 
         return self.points
-        #====================
-
 
 
 
