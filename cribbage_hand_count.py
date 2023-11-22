@@ -131,23 +131,22 @@ if __name__=='__main__':
             for t_c in top_cards:
                 yield h_h+(t_c,)
 
-    hand_points = [Hand(h).evaluate_points() for h in all_hands()]
+    total_points = [Hand(h).evaluate_points() for h in all_hands()]
 
     # Plots
 
-    vals_dist = [hand_points.count(j)/len(hand_points) for j in range(0,30)]
-    vals_dist_2130 = [hand_points.count(j)/len(hand_points) for j in range(21,30)]
+    rand_count = [total_points.count(j)/len(total_points) for j in range(0,30)]
+    rand_count_2130 = [total_points.count(j)/len(total_points) for j in range(21,30)]
 
-    df = pd.DataFrame({'dist':vals_dist_2130,'score': [j for j in range(21,30)]} )
+    df = pd.DataFrame({'dist':rand_count_2130,'score': [j for j in range(21,30)]} )
 
 
-
-    sns.set_theme(style="darkgrid")
-    sns.catplot(data = df,x='score',y='dist', kind='bar',color=sns.color_palette()[2])
-    plt.title('Points distribution with random choice for scores between 21 and 29')
-    plt.xlabel('points')
-    plt.ylabel('frequency')
-    plt.show()
+    # sns.set_theme(style="darkgrid")
+    # sns.catplot(data = df,x='score',y='dist', kind='bar',color=sns.color_palette()[2])
+    # plt.title('Points distribution with random choice for scores between 21 and 29')
+    # plt.xlabel('points')
+    # plt.ylabel('frequency')
+    # plt.show()
 
 
 
@@ -164,19 +163,19 @@ if __name__=='__main__':
     hand_count = [hand.count(j)/len(hand) for j in range(0,30)]
     crib_count = [crib.count(j)/len(crib) for j in range(0,30)]
 
-    sns.set_theme(style="darkgrid")
-    sns.catplot(data=hand_count, kind='bar',color=sns.color_palette()[0])
-    plt.title('Hand points distribution')
-    plt.xlabel('points')
-    plt.ylabel('frequency')
-    plt.show()
+    # sns.set_theme(style="darkgrid")
+    # sns.catplot(data=hand_count, kind='bar',color=sns.color_palette()[0])
+    # plt.title('Hand points distribution')
+    # plt.xlabel('points')
+    # plt.ylabel('frequency')
+    # plt.show()
     
-    sns.set_theme(style="darkgrid")
-    sns.catplot(data=crib_count, kind='bar',color=sns.color_palette()[1])
-    plt.title('Crib points distribution')
-    plt.xlabel('points')
-    plt.ylabel('frequency')
-    plt.show()
+    # sns.set_theme(style="darkgrid")
+    # sns.catplot(data=crib_count, kind='bar',color=sns.color_palette()[1])
+    # plt.title('Crib points distribution')
+    # plt.xlabel('points')
+    # plt.ylabel('frequency')
+    # plt.show()
 
 
 
@@ -188,58 +187,58 @@ if __name__=='__main__':
     data_df = ({'score':conc_scores, 'origin': origin_labels, 'frequency': conc_freq})
 
 
-    sns.set_theme(style="darkgrid")
-    sns.catplot(data_df, x = 'score', y = 'frequency',hue='origin',legend=True , legend_out=False, kind='bar')
-    plt.title('Hand and crib points distribution')
-    plt.xlabel('points')
-    plt.legend(loc="upper right")
-    plt.ylabel('frequency')
-    plt.show()
+    # sns.set_theme(style="darkgrid")
+    # sns.catplot(data_df, x = 'score', y = 'frequency',hue='origin',legend=True , legend_out=False, kind='bar')
+    # plt.title('Hand and crib points distribution')
+    # plt.xlabel('points')
+    # plt.legend(loc="upper right")
+    # plt.ylabel('frequency')
+    # plt.show()
 
 
-    conc_freq = hand_count + vals_dist
+    conc_freq = hand_count + rand_count
     origin_labels = ['hand' for j in range(0,30)] +['random choice' for j in range(0,30)]
 
 
     df_handtotal = ({'score':conc_scores, 'origin': origin_labels, 'frequency': conc_freq})
 
-    sns.set_theme(style="darkgrid")
-    sns.catplot(df_handtotal, x = 'score', y = 'frequency',hue='origin', legend=True , legend_out=False, kind='bar', palette=[sns.color_palette()[0],sns.color_palette()[2]])
-    plt.title('Hand and random choice points distribution')
-    plt.xlabel('points')
-    plt.legend(loc="upper right")
-    plt.ylabel('frequency')
-    plt.show()
+    # sns.set_theme(style="darkgrid")
+    # sns.catplot(df_handtotal, x = 'score', y = 'frequency',hue='origin', legend=True , legend_out=False, kind='bar', palette=[sns.color_palette()[0],sns.color_palette()[2]])
+    # plt.title('Hand and random choice points distribution')
+    # plt.xlabel('points')
+    # plt.legend(loc="upper right")
+    # plt.ylabel('frequency')
+    # plt.show()
 
 
-    conc_freq = crib_count + vals_dist
+    conc_freq = crib_count + rand_count
     origin_labels = ['crib' for j in range(0,30)] + ['random choice' for j in range(0,30)]
 
 
     df_cribtotal = ({'score':conc_scores, 'origin': origin_labels, 'frequency': conc_freq})
    
-    sns.set_theme(style="darkgrid")
-    sns.catplot(df_cribtotal, x = 'score', y = 'frequency',hue='origin',legend=True , legend_out=False, kind='bar', palette=[sns.color_palette()[1],sns.color_palette()[2]])
-    plt.title('Crib and random choice points distribution')
-    plt.xlabel('points')
-    plt.legend(loc="upper right")
-    plt.ylabel('frequency')
-    plt.show()
+    # sns.set_theme(style="darkgrid")
+    # sns.catplot(df_cribtotal, x = 'score', y = 'frequency',hue='origin',legend=True , legend_out=False, kind='bar', palette=[sns.color_palette()[1],sns.color_palette()[2]])
+    # plt.title('Crib and random choice points distribution')
+    # plt.xlabel('points')
+    # plt.legend(loc="upper right")
+    # plt.ylabel('frequency')
+    # plt.show()
 
 
     # Statistics
     hand_full = [hand.count(j) for j in range(0,30)]
     crib_full = [crib.count(j) for j in range(0,30)]
-    rand_full_hand = [hand_points.count(j)*(len(hand))/len(hand_points) for j in range(0,30)]
-    rand_full_crib = [hand_points.count(j)*(len(crib))/len(hand_points) for j in range(0,30)]
+    rand_full_hand = [total_points.count(j)*(len(hand))/len(total_points) for j in range(0,30)]
+    rand_full_crib = [total_points.count(j)*(len(crib))/len(total_points) for j in range(0,30)]
 
     hand_mean = np.mean(hand)
     crib_mean = np.mean(crib)
-    total_mean = np.mean(hand_points)
+    total_mean = np.mean(total_points)
 
     hand_var = np.var(hand)
     crib_var = np.var(crib)
-    total_var = np.var(hand_points)
+    total_var = np.var(total_points)
 
     df_chi = pd.DataFrame({'random_hand':rand_full_hand,'random_crib':rand_full_crib,'hand':hand_full,'crib':crib_full})
 
@@ -249,8 +248,48 @@ if __name__=='__main__':
     chi_hand = chisquare(f_obs=df_chi['hand'], f_exp=df_chi['random_hand'], ddof=len(hand)-1)
     chi_crib = chisquare(f_obs=df_chi['crib'], f_exp=df_chi['random_crib'], ddof=len(crib)-1)
 
-    print(hand_mean,crib_mean,total_mean)
-    print(hand_var,crib_var,total_var)
-    print(chi_hand)
-    print(chi_crib)
+    # print(hand_mean,crib_mean,total_mean)
+    # print(hand_var,crib_var,total_var)
+    # print(chi_hand)
+    # print(chi_crib)
     
+
+    # even vs odd
+    
+    def even_odd(origin):
+        ct = eval(origin + "_count")
+        even = [ct[j] for j in range(0,30) if j%2==0]
+        odd = [ct[j] for j in range(0,30) if j%2==1]
+        p_even = sum(even)
+        return even, odd, p_even
+
+    hand_even, hand_odd, p_even_hand = even_odd("hand")
+    crib_even, crib_odd, p_even_crib = even_odd("crib")
+    rand_even, rand_odd, p_even_rand = even_odd("rand")
+
+    print(p_even_hand,p_even_crib,p_even_rand)
+
+    # chi sq
+    hand_full = [hand.count(j) for j in range(0,30)]
+    crib_full = [crib.count(j) for j in range(0,30)]
+    rand_full_hand = [total_points.count(j)*(len(hand))/len(total_points) for j in range(0,30)]
+    rand_full_crib = [total_points.count(j)*(len(crib))/len(total_points) for j in range(0,30)]
+
+
+
+    df_chi_even = pd.DataFrame({'random_hand':rand_full_hand,'random_crib':rand_full_crib,'hand':hand_full,'crib':crib_full})
+
+    df_chi_even = df_chi.drop([j for j in range(0,3) if j%2==1])
+    df_chi_odd = df_chi.drop([j for j in range(0,3) if j%2==0])
+
+
+    chi_hand_even = chisquare(f_obs=df_chi_even['hand'], f_exp=df_chi_even['random_hand'], ddof=len(hand)-1)
+    chi_crib_even = chisquare(f_obs=df_chi_even['crib'], f_exp=df_chi_even['random_crib'], ddof=len(crib)-1)
+    
+    chi_hand_odd = chisquare(f_obs=df_chi_odd['hand'], f_exp=df_chi_odd['random_hand'], ddof=len(hand)-1)
+    chi_crib_odd = chisquare(f_obs=df_chi_odd['crib'], f_exp=df_chi_odd['random_crib'], ddof=len(crib)-1)
+
+    print(chi_hand_even)
+    print(chi_crib_even)
+    print(chi_hand_odd)
+    print(chi_crib_odd)
