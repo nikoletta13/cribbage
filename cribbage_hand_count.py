@@ -133,12 +133,20 @@ if __name__=='__main__':
 
     total_points = [Hand(h).evaluate_points() for h in all_hands()]
 
+
+    def normalise(l,N=1):
+        """
+        Nrmalise list l to be used for comparison with a sample of size N.
+        """
+        return [N*x/sum(l) for x in l]
+    
     # Plots
 
-    rand_count = [total_points.count(j)/len(total_points) for j in range(0,30)]
+    rand_freq = [total_points.count(j)/len(total_points) for j in range(0,30)]
     rand_count_2130 = [total_points.count(j)/len(total_points) for j in range(21,30)]
 
     df = pd.DataFrame({'dist':rand_count_2130,'score': [j for j in range(21,30)]} )
+
 
 
     # sns.set_theme(style="darkgrid")
@@ -196,7 +204,7 @@ if __name__=='__main__':
     # plt.show()
 
 
-    conc_freq = hand_count + rand_count
+    conc_freq = hand_count + rand_freq
     origin_labels = ['hand' for j in range(0,30)] +['random choice' for j in range(0,30)]
 
 
@@ -211,7 +219,7 @@ if __name__=='__main__':
     # plt.show()
 
 
-    conc_freq = crib_count + rand_count
+    conc_freq = crib_count + rand_freq
     origin_labels = ['crib' for j in range(0,30)] + ['random choice' for j in range(0,30)]
 
 
@@ -229,8 +237,9 @@ if __name__=='__main__':
     # Statistics
     hand_full = [hand.count(j) for j in range(0,30)]
     crib_full = [crib.count(j) for j in range(0,30)]
-    rand_full_hand = [total_points.count(j)*(len(hand))/len(total_points) for j in range(0,30)]
-    rand_full_crib = [total_points.count(j)*(len(crib))/len(total_points) for j in range(0,30)]
+    # normalise
+    rand_full_hand = [x*len(hand) for x in rand_freq]
+    rand_full_crib = [x*len(crib) for x in rand_freq]
 
     hand_mean = np.mean(hand)
     crib_mean = np.mean(crib)
@@ -245,49 +254,57 @@ if __name__=='__main__':
     df_chi = df_chi.drop(df_chi[df_chi['random_hand']==0].index)
 
 
-    chi_hand = chisquare(f_obs=df_chi['hand'], f_exp=df_chi['random_hand'], ddof=len(hand)-1)
-    chi_crib = chisquare(f_obs=df_chi['crib'], f_exp=df_chi['random_crib'], ddof=len(crib)-1)
+    chi_hand = chisquare(f_obs=df_chi['hand'], f_exp=df_chi['random_hand'])#, ddof=len(df_chi)-1)
+    chi_crib = chisquare(f_obs=df_chi['crib'], f_exp=df_chi['random_crib'])#, ddof=len(df_chi)-1)
 
     # print(hand_mean,crib_mean,total_mean)
     # print(hand_var,crib_var,total_var)
-    # print(chi_hand)
-    # print(chi_crib)
+    print(chi_hand)
+    print(chi_crib)
     
 
     # even vs odd
     
     def even_odd(origin):
-        ct = eval(origin + "_count")
-        even = [ct[j] for j in range(0,30) if j%2==0]
-        odd = [ct[j] for j in range(0,30) if j%2==1]
+        even = [origin[j] for j in range(0,30) if j%2==0]
+        odd = [origin[j] for j in range(0,30) if j%2==1]
         p_even = sum(even)
         return even, odd, p_even
 
-    hand_even, hand_odd, p_even_hand = even_odd("hand")
-    crib_even, crib_odd, p_even_crib = even_odd("crib")
-    rand_even, rand_odd, p_even_rand = even_odd("rand")
+    hand_even, hand_odd, p_even_hand = even_odd(hand_count)
+    crib_even, crib_odd, p_even_crib = even_odd(crib_count)
+    rand_even, rand_odd, p_even_rand = even_odd(rand_freq)
 
     print(p_even_hand,p_even_crib,p_even_rand)
 
     # chi sq
-    hand_full = [hand.count(j) for j in range(0,30)]
-    crib_full = [crib.count(j) for j in range(0,30)]
-    rand_full_hand = [total_points.count(j)*(len(hand))/len(total_points) for j in range(0,30)]
-    rand_full_crib = [total_points.count(j)*(len(crib))/len(total_points) for j in range(0,30)]
+    hand_full_even, hand_full_odd, tot_hand_even = even_odd(hand_full) 
+    crib_full_even, crib_full_odd, tot_crib_even = even_odd(crib_full) 
 
 
 
-    df_chi_even = pd.DataFrame({'random_hand':rand_full_hand,'random_crib':rand_full_crib,'hand':hand_full,'crib':crib_full})
+    #normalise
+    rand_even_hand = normalise(rand_even,tot_hand_even)
+    rand_odd_hand = normalise(rand_odd,len(hand)-tot_hand_even)
+    rand_even_crib = normalise(rand_even,tot_crib_even)
+    rand_odd_crib = normalise(rand_odd,len(crib)-tot_crib_even)
 
-    df_chi_even = df_chi.drop([j for j in range(0,3) if j%2==1])
-    df_chi_odd = df_chi.drop([j for j in range(0,3) if j%2==0])
+
+    df_chi_even = pd.DataFrame({'random_hand':rand_even_hand,'random_crib':rand_even_crib,'hand':hand_full_even,'crib':crib_full_even})
+    df_chi_odd = pd.DataFrame({'random_hand':rand_odd_hand,'random_crib':rand_odd_crib,'hand':hand_full_odd,'crib':crib_full_odd})
+
+    df_chi_even = df_chi_even.drop(df_chi_even[df_chi_even['random_hand']==0].index)
+    df_chi_odd = df_chi_odd.drop(df_chi_odd[df_chi_odd['random_hand']==0].index)
 
 
-    chi_hand_even = chisquare(f_obs=df_chi_even['hand'], f_exp=df_chi_even['random_hand'], ddof=len(hand)-1)
-    chi_crib_even = chisquare(f_obs=df_chi_even['crib'], f_exp=df_chi_even['random_crib'], ddof=len(crib)-1)
+
+
+
+    chi_hand_even = chisquare(f_obs=df_chi_even['hand'], f_exp=df_chi_even['random_hand'])
+    chi_crib_even = chisquare(f_obs=df_chi_even['crib'], f_exp=df_chi_even['random_crib'])
     
-    chi_hand_odd = chisquare(f_obs=df_chi_odd['hand'], f_exp=df_chi_odd['random_hand'], ddof=len(hand)-1)
-    chi_crib_odd = chisquare(f_obs=df_chi_odd['crib'], f_exp=df_chi_odd['random_crib'], ddof=len(crib)-1)
+    chi_hand_odd = chisquare(f_obs=df_chi_odd['hand'], f_exp=df_chi_odd['random_hand'])
+    chi_crib_odd = chisquare(f_obs=df_chi_odd['crib'], f_exp=df_chi_odd['random_crib'])
 
     print(chi_hand_even)
     print(chi_crib_even)
